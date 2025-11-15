@@ -2,237 +2,248 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Meme Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SolMeme Generator</title>
 
 <style>
     body {
         margin: 0;
-        background: #0d1b3d;
+        padding: 0;
+        background: #0f1a3b;
         font-family: Arial, sans-serif;
         color: #fff;
         display: flex;
         justify-content: center;
-        padding: 20px;
+        padding: 25px;
     }
 
-    .container {
-        background: #16254d;
+    .wrapper {
+        width: 100%;
+        max-width: 950px;
+        background: #16244f;
         padding: 25px;
         border-radius: 12px;
-        width: 100%;
-        max-width: 900px;
-        box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 0 22px rgba(0,0,0,0.4);
     }
 
     h1 {
         text-align: center;
         margin-bottom: 25px;
+        color: #76a7ff;
         font-size: 32px;
-        color: #77aaff;
     }
 
-    .tools {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-
-    .tools div {
-        flex: 1;
-        min-width: 150px;
+    label {
+        display: block;
+        margin: 12px 0 5px;
+        font-size: 15px;
+        color: #bdd0ff;
     }
 
     input, select {
         width: 100%;
         padding: 10px;
-        background: #0f1a38;
-        border: 1px solid #2e3d66;
+        background: #0d1734;
+        border: 1px solid #314270;
         color: #fff;
-        border-radius: 8px;
+        border-radius: 7px;
+        font-size: 14px;
+        outline: none;
     }
 
-    #canvas-wrapper {
-        position: relative;
+    #board {
         width: 100%;
-        background: #0b132b;
-        border: 2px solid #2e3d66;
+        max-height: 600px;
+        background: #091024;
+        border: 2px solid #314270;
+        margin-top: 25px;
         border-radius: 10px;
-        margin-top: 20px;
         overflow: hidden;
+        position: relative;
         display: flex;
         justify-content: center;
+        align-items: center;
     }
 
     canvas {
         max-width: 100%;
+        max-height: 100%;
     }
 
-    .text-box {
+    .text-layer {
         position: absolute;
-        cursor: move;
+        font-size: 40px;
         font-weight: bold;
-        text-transform: uppercase;
-        text-align: center;
-        pointer-events: auto;
+        color: white;
+        cursor: move;
         user-select: none;
+        text-transform: uppercase;
+        text-shadow: 3px 3px 0 #000;
+        white-space: nowrap;
     }
 
     button {
+        margin-top: 20px;
         width: 100%;
-        padding: 12px;
+        padding: 14px;
         background: #1f6feb;
-        color: white;
-        margin-top: 15px;
         border: none;
+        color: #fff;
+        font-size: 17px;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 16px;
     }
 
     button:hover {
-        opacity: 0.85;
+        opacity: .85;
     }
 </style>
 </head>
 
 <body>
-<div class="container">
-    <h1>Meme Generator</h1>
+<div class="wrapper">
 
-    <div class="tools">
-        <div>
-            <label>Upload Image</label>
-            <input type="file" id="upload" accept="image/*">
+    <h1>SOLMEME MAKER</h1>
+
+    <label>Upload Image</label>
+    <input type="file" id="upload" accept="image/*">
+
+    <label>Font Style</label>
+    <select id="fontSelect">
+        <option value="Impact">Impact</option>
+        <option value="Arial">Arial</option>
+        <option value="Comic Sans MS">Comic Sans</option>
+    </select>
+
+    <label>Text Color</label>
+    <input type="color" id="textColor" value="#ffffff">
+
+    <label>Outline Color</label>
+    <input type="color" id="outlineColor" value="#000000">
+
+    <label>Top Text</label>
+    <input type="text" id="topInput" placeholder="Enter top text">
+
+    <label>Bottom Text</label>
+    <input type="text" id="bottomInput" placeholder="Enter bottom text">
+
+    <div id="board">
+        <canvas id="canvas"></canvas>
+
+        <div id="topText" class="text-layer" style="top: 20px; left: 50%; transform: translateX(-50%);">
+            TOP TEXT
         </div>
 
-        <div>
-            <label>Font</label>
-            <select id="font">
-                <option>Impact</option>
-                <option>Arial</option>
-                <option>Comic Sans MS</option>
-                <option>Anton</option>
-            </select>
-        </div>
-
-        <div>
-            <label>Text Color</label>
-            <input type="color" id="color" value="#ffffff">
-        </div>
-
-        <div>
-            <label>Stroke Color</label>
-            <input type="color" id="stroke" value="#000000">
+        <div id="bottomText" class="text-layer" style="bottom: 20px; left: 50%; transform: translateX(-50%);">
+            BOTTOM TEXT
         </div>
     </div>
 
-    <label>Add Top Text</label>
-    <input type="text" id="topText" placeholder="Top text">
+    <button id="downloadBtn">Download Meme</button>
 
-    <label style="margin-top:10px;">Add Bottom Text</label>
-    <input type="text" id="bottomText" placeholder="Bottom text">
-
-    <div id="canvas-wrapper">
-        <canvas id="memeCanvas"></canvas>
-
-        <div id="topBox" class="text-box" style="top:10px;">TOP TEXT</div>
-        <div id="bottomBox" class="text-box" style="bottom:10px;">BOTTOM TEXT</div>
-    </div>
-
-    <button id="download">Download Meme</button>
 </div>
 
 <script>
 const upload = document.getElementById("upload");
-const canvas = document.getElementById("memeCanvas");
+const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-const topBox = document.getElementById("topBox");
-const bottomBox = document.getElementById("bottomBox");
+const topText = document.getElementById("topText");
+const bottomText = document.getElementById("bottomText");
+const fontSelect = document.getElementById("fontSelect");
+const textColor = document.getElementById("textColor");
+const outlineColor = document.getElementById("outlineColor");
 
 let img = new Image();
 
-// drag logic
+// DRAGGABLE TEXT
 function makeDraggable(el) {
-    let isDown = false, offsetX, offsetY;
+    let dragging = false, offsetX = 0, offsetY = 0;
 
     el.addEventListener("mousedown", e => {
-        isDown = true;
+        dragging = true;
         offsetX = e.offsetX;
         offsetY = e.offsetY;
     });
 
-    window.addEventListener("mouseup", () => isDown = false);
+    window.addEventListener("mouseup", () => dragging = false);
 
     window.addEventListener("mousemove", e => {
-        if (!isDown) return;
-        el.style.left = (e.pageX - canvas.offsetLeft - offsetX) + "px";
-        el.style.top = (e.pageY - canvas.offsetTop - offsetY) + "px";
+        if (!dragging) return;
+        const rect = canvas.getBoundingClientRect();
+        el.style.left = (e.clientX - rect.left - offsetX) + "px";
+        el.style.top = (e.clientY - rect.top - offsetY) + "px";
     });
 }
 
-makeDraggable(topBox);
-makeDraggable(bottomBox);
+makeDraggable(topText);
+makeDraggable(bottomText);
 
-// update text live
-document.getElementById("topText").addEventListener("input", e => {
-    topBox.textContent = e.target.value.toUpperCase();
-});
-document.getElementById("bottomText").addEventListener("input", e => {
-    bottomBox.textContent = e.target.value.toUpperCase();
-});
+// TEXT INPUT UPDATES
+document.getElementById("topInput").oninput = e => {
+    topText.textContent = e.target.value.toUpperCase();
+};
+document.getElementById("bottomInput").oninput = e => {
+    bottomText.textContent = e.target.value.toUpperCase();
+};
 
-// load image
+// LOAD IMAGE
 upload.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = () => {
+        img = new Image();
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            drawMeme();
+        };
         img.src = reader.result;
     };
+
     reader.readAsDataURL(file);
 };
 
-// draw final canvas
-function renderMeme() {
-    canvas.width = img.width;
-    canvas.height = img.height;
-
+// DRAW CANVAS
+function drawMeme() {
+    ctx.clearRect(0,0,canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    drawText(topBox);
-    drawText(bottomBox);
+    drawTextOnCanvas(topText);
+    drawTextOnCanvas(bottomText);
 }
 
-function drawText(box) {
-    const font = document.getElementById("font").value;
-    const color = document.getElementById("color").value;
-    const stroke = document.getElementById("stroke").value;
+function drawTextOnCanvas(el) {
+    const style = window.getComputedStyle(el);
 
-    const fontSize = canvas.width / 10;
-    ctx.font = `${fontSize}px ${font}`;
+    const fontSize = parseInt(style.fontSize);
+    const fontFamily = fontSelect.value;
+    const color = textColor.value;
+    const stroke = outlineColor.value;
+
+    ctx.font = `${fontSize}px ${fontFamily}`;
     ctx.fillStyle = color;
     ctx.strokeStyle = stroke;
-    ctx.lineWidth = fontSize / 15;
+    ctx.lineWidth = fontSize / 12;
     ctx.textAlign = "center";
 
-    const x = canvas.width / 2;
-    const y = parseInt(box.style.top || (canvas.height - 50));
+    const x = el.offsetLeft + el.offsetWidth / 2;
+    const y = el.offsetTop + fontSize;
 
-    ctx.strokeText(box.textContent, x, y);
-    ctx.fillText(box.textContent, x, y);
+    ctx.strokeText(el.textContent, x, y);
+    ctx.fillText(el.textContent, x, y);
 }
 
-document.getElementById("download").onclick = () => {
-    if (!img.src) return alert("Upload an image first.");
+document.getElementById("downloadBtn").onclick = () => {
+    if (!img.src) return alert("Upload an image first");
 
-    renderMeme();
+    drawMeme();
 
     const link = document.createElement("a");
-    link.download = "meme.png";
+    link.download = "solmeme.png";
     link.href = canvas.toDataURL();
     link.click();
 };
