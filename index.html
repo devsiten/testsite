@@ -11,22 +11,15 @@
     body {
         margin: 0;
         padding: 0;
-        background: linear-gradient(135deg, #0f1a3b, #1a2a6c, #0f1a3b, #2a3a7c);
-        background-size: 400% 400%;
-        animation: gradientBg 20s ease infinite;
-        font-family: 'Arial', sans-serif;
+        background: #0f1a3b;
+        font-family: Arial, sans-serif;
         color: #fff;
         display: flex;
         justify-content: center;
         padding: 25px;
         min-height: 100vh;
         animation: fadeIn 1s ease-in;
-    }
-
-    @keyframes gradientBg {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        overflow-x: hidden;
     }
 
     @keyframes fadeIn {
@@ -34,15 +27,51 @@
         to { opacity: 1; }
     }
 
+    /* 🔥 WAVE BACKGROUND */
+    .wave-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -5;
+    }
+
+    .wave {
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -60%;
+        left: -50%;
+        background: radial-gradient(circle at 50% 80%, rgba(118,167,255,0.22), transparent 70%),
+                    radial-gradient(circle at 30% 20%, rgba(0,140,255,0.22), transparent 70%);
+        animation: waveMove 18s linear infinite;
+        opacity: 0.6;
+        filter: blur(80px);
+    }
+
+    .wave:nth-child(2) { animation-duration: 26s; opacity: 0.45; filter: blur(110px); }
+    .wave:nth-child(3) { animation-duration: 34s; opacity: 0.35; filter: blur(130px); }
+
+    @keyframes waveMove {
+        0% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(180deg) scale(1.1); }
+        100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /* MAIN CARD */
     .wrapper {
         width: 100%;
-        max-width: 950px;
-        background: rgba(22, 36, 79, 0.8);
+        max-width: 980px;
+        background: rgba(22, 36, 79, 0.85);
         padding: 30px;
         border-radius: 16px;
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 35px rgba(0,0,0,0.5);
+        backdrop-filter: blur(6px);
+        position: relative;
+        z-index: 2;
         animation: slideUp 0.8s ease-out;
-        backdrop-filter: blur(5px);
     }
 
     @keyframes slideUp {
@@ -52,18 +81,18 @@
 
     h1 {
         text-align: center;
-        margin-bottom: 25px;
-        color: #76a7ff;
-        font-size: 36px;
-        font-family: 'Impact', sans-serif;
+        font-size: 40px;
+        font-family: Impact, sans-serif;
         letter-spacing: 2px;
-        text-shadow: 0 0 10px rgba(118, 167, 255, 0.5);
+        color: #76a7ff;
+        margin-bottom: 20px;
+        text-shadow: 0 0 22px rgba(118,167,255,0.55);
         animation: glow 2s infinite alternate;
     }
 
     @keyframes glow {
-        from { text-shadow: 0 0 10px rgba(118, 167, 255, 0.5); }
-        to { text-shadow: 0 0 20px rgba(118, 167, 255, 0.8); }
+        from { text-shadow: 0 0 15px rgba(118,167,255,0.4); }
+        to { text-shadow: 0 0 28px rgba(118,167,255,0.9); }
     }
 
     label {
@@ -83,73 +112,58 @@
         border-radius: 8px;
         font-size: 15px;
         outline: none;
-        transition: all 0.3s ease;
+        transition: 0.3s;
     }
 
     input:focus, select:focus {
         border-color: #1f6feb;
-        box-shadow: 0 0 8px rgba(31, 111, 235, 0.4);
+        box-shadow: 0 0 10px rgba(31,111,235,0.5);
     }
 
+    /* BIG IMAGE AREA */
     #board {
         width: 100%;
-        max-height: 600px;
-        background: #091024;
-        border: 3px solid #314270;
+        height: auto;
         margin-top: 25px;
+        border: 3px solid #314270;
         border-radius: 12px;
+        background: #091024;
         overflow: hidden;
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
-        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.45);
     }
 
     canvas {
-        max-width: 100%;
-        max-height: 100%;
-        border-radius: 10px;
-        transition: transform 0.3s ease;
+        width: 100% !important;
+        height: auto !important;
+        border-radius: 12px;
     }
 
-    canvas:hover {
-        transform: scale(1.01);
-    }
-
+    /* TEXT LAYERS */
     .text-layer {
         position: absolute;
-        font-size: 40px;
+        font-size: 42px;
         font-weight: bold;
-        color: white;
-        cursor: move;
-        user-select: none;
+        color: #fff;
         text-transform: uppercase;
-        text-shadow: 
-            3px 3px 0 #000,
-            -1px -1px 0 #000,
-            1px -1px 0 #000,
-            -1px 1px 0 #000,
-            1px 1px 0 #000;
+        user-select: none;
+        cursor: grab;
         white-space: nowrap;
-        font-family: 'Impact', sans-serif;
-        transition: transform 0.1s ease;
+        text-shadow:
+            3px 3px 0 #000,
+            -2px -2px 0 #000,
+            2px -2px 0 #000,
+            -2px 2px 0 #000,
+            2px 2px 0 #000;
         animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
-        0%, 100% { transform: scale(1); }
+        0%,100% { transform: scale(1); }
         50% { transform: scale(1.03); }
-    }
-
-    .text-layer.shake {
-        animation: shake 0.5s ease-in-out;
-    }
-
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
 
     button {
@@ -158,74 +172,47 @@
         padding: 16px;
         background: linear-gradient(135deg, #1f6feb, #00c3ff);
         border: none;
+        border-radius: 10px;
         color: #fff;
         font-size: 18px;
         font-weight: bold;
-        border-radius: 10px;
         cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(31, 111, 235, 0.4);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
         position: relative;
         overflow: hidden;
+        transition: 0.25s;
     }
 
-    button::before {
-        content: '';
-        position: absolute;
-        top: 0; left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: 0.5s;
-    }
-
-    button:hover::before {
-        left: 100%;
-    }
-
-    button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(31, 111, 235, 0.6);
-    }
-
-    button:active {
-        transform: translateY(1px);
-    }
-
-    .ai-section {
-        margin-top: 20px;
-        padding: 15px;
-        background: rgba(13, 23, 52, 0.8);
-        border-radius: 8px;
-        border: 1px solid #314270;
-    }
-
-    .ai-section button {
-        margin-top: 10px;
-    }
+    button:hover { transform: translateY(-3px); }
 </style>
 </head>
 
 <body>
+
+<!-- 🔥 MOVING WAVES -->
+<div class="wave-container">
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+</div>
+
 <div class="wrapper">
 
     <h1>SOLMEME MAKER</h1>
 
-    <div class="ai-section">
-        <label>AI Image Prompt</label>
-        <input type="text" id="aiPrompt" placeholder="Describe the image, e.g., 'A funny cat on Solana blockchain'">
+    <label>AI Image Prompt</label>
+    <input type="text" id="aiPrompt" placeholder="Describe an image…">
 
-        <button id="generateAI">Generate AI Image</button>
-    </div>
+    <button id="generateAI">Generate AI Image</button>
 
-    <label>Upload Image (or use generated AI image)</label>
+    <label>Upload Image</label>
     <input type="file" id="upload" accept="image/*">
 
     <label>Font Style</label>
     <select id="fontSelect">
         <option value="Impact">Impact</option>
         <option value="Arial Black">Arial Black</option>
-        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Comic Sans MS">Comic Sans</option>
         <option value="Courier New">Courier New</option>
     </select>
 
@@ -236,25 +223,24 @@
     <input type="color" id="outlineColor" value="#000000">
 
     <label>Top Text</label>
-    <input type="text" id="topInput" placeholder="Enter top text" autocomplete="off">
+    <input type="text" id="topInput" placeholder="Enter top text">
 
     <label>Bottom Text</label>
-    <input type="text" id="bottomInput" placeholder="Enter bottom text" autocomplete="off">
+    <input type="text" id="bottomInput" placeholder="Enter bottom text">
 
     <div id="board">
         <canvas id="canvas"></canvas>
 
-        <div id="topText" class="text-layer" style="top: 20px; left: 50%; transform: translateX(-50%);">
+        <div id="topText" class="text-layer" style="top:20px; left:50%; transform:translateX(-50%);">
             TOP TEXT
         </div>
 
-        <div id="bottomText" class="text-layer" style="bottom: 20px; left: 50%; transform: translateX(-50%);">
+        <div id="bottomText" class="text-layer" style="bottom:20px; left:50%; transform:translateX(-50%);">
             BOTTOM TEXT
         </div>
     </div>
 
     <button id="downloadBtn">DOWNLOAD SOLMEME</button>
-
 </div>
 
 <script>
@@ -269,13 +255,10 @@ const textColor = document.getElementById("textColor");
 const outlineColor = document.getElementById("outlineColor");
 const topInput = document.getElementById("topInput");
 const bottomInput = document.getElementById("bottomInput");
-const aiPrompt = document.getElementById("aiPrompt");
-const generateAI = document.getElementById("generateAI");
 
 let img = new Image();
 let scale = 1;
 
-// DRAGGABLE TEXT
 function makeDraggable(el) {
     let dragging = false, offsetX = 0, offsetY = 0;
 
@@ -284,57 +267,24 @@ function makeDraggable(el) {
         const rect = canvas.getBoundingClientRect();
         offsetX = e.clientX - rect.left - parseFloat(el.style.left || 0);
         offsetY = e.clientY - rect.top - parseFloat(el.style.top || 0);
-        el.style.transition = 'none';
     });
 
-    window.addEventListener("mouseup", () => {
-        dragging = false;
-        setTimeout(() => el.style.transition = 'transform 0.1s ease', 100);
-    });
+    window.addEventListener("mouseup", () => dragging = false);
 
     window.addEventListener("mousemove", e => {
         if (!dragging) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left - offsetX;
-        const y = e.clientY - rect.top - offsetY;
 
-        el.style.left = x + "px";
-        el.style.top = y + "px";
-        el.style.transform = 'none';
+        const rect = canvas.getBoundingClientRect();
+        el.style.left = (e.clientX - rect.left - offsetX) + "px";
+        el.style.top  = (e.clientY - rect.top - offsetY) + "px";
+        el.style.transform = "none";
     });
 }
 
 makeDraggable(topText);
 makeDraggable(bottomText);
 
-// TEXT INPUT WITH SHAKE ANIMATION
-function addShakeEffect(input, textEl) {
-    input.oninput = e => {
-        const value = e.target.value.toUpperCase();
-        textEl.textContent = value || (textEl === topText ? "TOP TEXT" : "BOTTOM TEXT");
-        textEl.classList.add('shake');
-        setTimeout(() => textEl.classList.remove('shake'), 500);
-        drawMeme();
-    };
-}
-
-addShakeEffect(topInput, topText);
-addShakeEffect(bottomInput, bottomText);
-
-// STYLE CHANGES
-fontSelect.onchange = textColor.onchange = outlineColor.onchange = drawMeme;
-
-// AI IMAGE GENERATION PLACEHOLDER
-generateAI.onclick = () => {
-    const prompt = aiPrompt.value.trim();
-    if (!prompt) {
-        alert("Please enter a description for the AI image!");
-        return;
-    }
-    alert(`AI image generation coming soon! For now, copy this prompt and ask Grok (on x.com or grok.com) to generate it: "${prompt}". Then download the image and upload it here. Visit https://x.ai/api for xAI API integration options.`);
-};
-
-// LOAD IMAGE WITH PROPER SCALING
+// Image upload
 upload.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -343,21 +293,8 @@ upload.onchange = e => {
     reader.onload = () => {
         img = new Image();
         img.onload = () => {
-            const MAX_WIDTH = 900;
-            const MAX_HEIGHT = 550;
-
-            // Calculate scale to fit within bounds
-            scale = Math.min(MAX_WIDTH / img.width, MAX_HEIGHT / img.height, 1);
-            canvas.width = img.width * scale;
-            canvas.height = img.height * scale;
-
-            // Reset text positions
-            topText.style.top = '20px';
-            topText.style.left = '50%';
-            topText.style.transform = 'translateX(-50%)';
-            bottomText.style.bottom = '20px';
-            bottomText.style.left = '50%';
-            bottomText.style.transform = 'translateX(-50%)';
+            canvas.width = img.width;
+            canvas.height = img.height;
 
             drawMeme();
         };
@@ -366,58 +303,52 @@ upload.onchange = e => {
     reader.readAsDataURL(file);
 };
 
-// DRAW CANVAS
+// Inputs
+topInput.oninput = () => { topText.textContent = topInput.value.toUpperCase(); drawMeme(); };
+bottomInput.oninput = () => { bottomText.textContent = bottomInput.value.toUpperCase(); drawMeme(); };
+fontSelect.onchange = textColor.onchange = outlineColor.onchange = drawMeme;
+
+// DRAW
 function drawMeme() {
     if (!img.src) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw scaled image
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    drawTextOnCanvas(topText);
-    drawTextOnCanvas(bottomText);
+    drawText(topText);
+    drawText(bottomText);
 }
 
-function drawTextOnCanvas(el) {
+function drawText(el) {
     const style = window.getComputedStyle(el);
-    const fontSize = parseInt(style.fontSize) * scale;
-    const fontFamily = fontSelect.value;
-    const color = textColor.value;
-    const stroke = outlineColor.value;
+    const fontSize = parseInt(style.fontSize);
+    const font = fontSelect.value;
 
-    ctx.font = `bold ${fontSize}px ${fontFamily}`;
-    ctx.fillStyle = color;
-    ctx.strokeStyle = stroke;
+    const rectCanvas = canvas.getBoundingClientRect();
+    const rectEl = el.getBoundingClientRect();
+
+    const x = (rectEl.left - rectCanvas.left) + rectEl.width/2;
+    const y = (rectEl.top - rectCanvas.top) + fontSize;
+
+    ctx.font = `bold ${fontSize}px ${font}`;
+    ctx.fillStyle = textColor.value;
+    ctx.strokeStyle = outlineColor.value;
     ctx.lineWidth = fontSize / 10;
     ctx.textAlign = "center";
-    ctx.lineJoin = 'round';
 
-    // Get position relative to canvas
-    const rect = canvas.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    const x = (elRect.left - rect.left) + elRect.width / 2;
-    const y = (elRect.top - rect.top) + fontSize * 0.8;
-
-    // Draw outline then fill
     ctx.strokeText(el.textContent, x, y);
     ctx.fillText(el.textContent, x, y);
 }
 
-// DOWNLOAD
+// Download
 document.getElementById("downloadBtn").onclick = () => {
-    if (!img.src) return alert("Upload an image first!");
-
     drawMeme();
-
     const link = document.createElement("a");
     link.download = "solmeme.png";
-    link.href = canvas.toDataURL("image/png");
+    link.href = canvas.toDataURL();
     link.click();
 };
-
-// Initial draw
-drawMeme();
 </script>
+
 </body>
 </html>
