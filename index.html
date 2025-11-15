@@ -6,68 +6,106 @@
 <title>SolMeme Generator</title>
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Impact&display=swap');
+
     body {
         margin: 0;
         padding: 0;
         background: #0f1a3b;
-        font-family: Arial, sans-serif;
+        font-family: 'Arial', sans-serif;
         color: #fff;
         display: flex;
         justify-content: center;
         padding: 25px;
+        min-height: 100vh;
+        animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     .wrapper {
         width: 100%;
         max-width: 950px;
         background: #16244f;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 0 22px rgba(0,0,0,0.4);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.8s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
 
     h1 {
         text-align: center;
         margin-bottom: 25px;
         color: #76a7ff;
-        font-size: 32px;
+        font-size: 36px;
+        font-family: 'Impact', sans-serif;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px rgba(118, 167, 255, 0.5);
+        animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 10px rgba(118, 167, 255, 0.5); }
+        to { text-shadow: 0 0 20px rgba(118, 167, 255, 0.8); }
     }
 
     label {
         display: block;
-        margin: 12px 0 5px;
+        margin: 14px 0 6px;
         font-size: 15px;
         color: #bdd0ff;
+        font-weight: 600;
     }
 
     input, select {
         width: 100%;
-        padding: 10px;
+        padding: 12px;
         background: #0d1734;
         border: 1px solid #314270;
         color: #fff;
-        border-radius: 7px;
-        font-size: 14px;
+        border-radius: 8px;
+        font-size: 15px;
         outline: none;
+        transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+        border-color: #1f6feb;
+        box-shadow: 0 0 8px rgba(31, 111, 235, 0.4);
     }
 
     #board {
         width: 100%;
         max-height: 600px;
         background: #091024;
-        border: 2px solid #314270;
+        border: 3px solid #314270;
         margin-top: 25px;
-        border-radius: 10px;
+        border-radius: 12px;
         overflow: hidden;
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
     }
 
     canvas {
         max-width: 100%;
         max-height: 100%;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    canvas:hover {
+        transform: scale(1.01);
     }
 
     .text-layer {
@@ -78,24 +116,71 @@
         cursor: move;
         user-select: none;
         text-transform: uppercase;
-        text-shadow: 3px 3px 0 #000;
+        text-shadow: 
+            3px 3px 0 #000,
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000;
         white-space: nowrap;
+        font-family: 'Impact', sans-serif;
+        transition: transform 0.1s ease;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.03); }
+    }
+
+    .text-layer.shake {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
 
     button {
-        margin-top: 20px;
+        margin-top: 25px;
         width: 100%;
-        padding: 14px;
-        background: #1f6feb;
+        padding: 16px;
+        background: linear-gradient(135deg, #1f6feb, #00c3ff);
         border: none;
         color: #fff;
-        font-size: 17px;
-        border-radius: 8px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 10px;
         cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(31, 111, 235, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    button::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: 0.5s;
+    }
+
+    button:hover::before {
+        left: 100%;
     }
 
     button:hover {
-        opacity: .85;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(31, 111, 235, 0.6);
+    }
+
+    button:active {
+        transform: translateY(1px);
     }
 </style>
 </head>
@@ -111,8 +196,9 @@
     <label>Font Style</label>
     <select id="fontSelect">
         <option value="Impact">Impact</option>
-        <option value="Arial">Arial</option>
-        <option value="Comic Sans MS">Comic Sans</option>
+        <option value="Arial Black">Arial Black</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Courier New">Courier New</option>
     </select>
 
     <label>Text Color</label>
@@ -122,10 +208,10 @@
     <input type="color" id="outlineColor" value="#000000">
 
     <label>Top Text</label>
-    <input type="text" id="topInput" placeholder="Enter top text">
+    <input type="text" id="topInput" placeholder="Enter top text" autocomplete="off">
 
     <label>Bottom Text</label>
-    <input type="text" id="bottomInput" placeholder="Enter bottom text">
+    <input type="text" id="bottomInput" placeholder="Enter bottom text" autocomplete="off">
 
     <div id="board">
         <canvas id="canvas"></canvas>
@@ -139,7 +225,7 @@
         </div>
     </div>
 
-    <button id="downloadBtn">Download Meme</button>
+    <button id="downloadBtn">DOWNLOAD SOLMEME</button>
 
 </div>
 
@@ -153,8 +239,11 @@ const bottomText = document.getElementById("bottomText");
 const fontSelect = document.getElementById("fontSelect");
 const textColor = document.getElementById("textColor");
 const outlineColor = document.getElementById("outlineColor");
+const topInput = document.getElementById("topInput");
+const bottomInput = document.getElementById("bottomInput");
 
 let img = new Image();
+let scale = 1;
 
 // DRAGGABLE TEXT
 function makeDraggable(el) {
@@ -162,32 +251,50 @@ function makeDraggable(el) {
 
     el.addEventListener("mousedown", e => {
         dragging = true;
-        offsetX = e.offsetX;
-        offsetY = e.offsetY;
+        const rect = canvas.getBoundingClientRect();
+        offsetX = e.clientX - rect.left - parseFloat(el.style.left || 0);
+        offsetY = e.clientY - rect.top - parseFloat(el.style.top || 0);
+        el.style.transition = 'none';
     });
 
-    window.addEventListener("mouseup", () => dragging = false);
+    window.addEventListener("mouseup", () => {
+        dragging = false;
+        setTimeout(() => el.style.transition = 'transform 0.1s ease', 100);
+    });
 
     window.addEventListener("mousemove", e => {
         if (!dragging) return;
         const rect = canvas.getBoundingClientRect();
-        el.style.left = (e.clientX - rect.left - offsetX) + "px";
-        el.style.top = (e.clientY - rect.top - offsetY) + "px";
+        const x = e.clientX - rect.left - offsetX;
+        const y = e.clientY - rect.top - offsetY;
+
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        el.style.transform = 'none';
     });
 }
 
 makeDraggable(topText);
 makeDraggable(bottomText);
 
-// TEXT INPUT UPDATES
-document.getElementById("topInput").oninput = e => {
-    topText.textContent = e.target.value.toUpperCase();
-};
-document.getElementById("bottomInput").oninput = e => {
-    bottomText.textContent = e.target.value.toUpperCase();
-};
+// TEXT INPUT WITH SHAKE ANIMATION
+function addShakeEffect(input, textEl) {
+    input.oninput = e => {
+        const value = e.target.value.toUpperCase();
+        textEl.textContent = value || (textEl === topText ? "TOP TEXT" : "BOTTOM TEXT");
+        textEl.classList.add('shake');
+        setTimeout(() => textEl.classList.remove('shake'), 500);
+        drawMeme();
+    };
+}
 
-// LOAD IMAGE
+addShakeEffect(topInput, topText);
+addShakeEffect(bottomInput, bottomText);
+
+// STYLE CHANGES
+fontSelect.onchange = textColor.onchange = outlineColor.onchange = drawMeme;
+
+// LOAD IMAGE WITH PROPER SCALING
 upload.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -196,20 +303,36 @@ upload.onchange = e => {
     reader.onload = () => {
         img = new Image();
         img.onload = () => {
-            canvas.width = img.width;
-            canvas.height = img.height;
+            const MAX_WIDTH = 900;
+            const MAX_HEIGHT = 550;
+
+            // Calculate scale to fit within bounds
+            scale = Math.min(MAX_WIDTH / img.width, MAX_HEIGHT / img.height, 1);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+
+            // Reset text positions
+            topText.style.top = '20px';
+            topText.style.left = '50%';
+            topText.style.transform = 'translateX(-50%)';
+            bottomText.style.bottom = '20px';
+            bottomText.style.left = '50%';
+            bottomText.style.transform = 'translateX(-50%)';
 
             drawMeme();
         };
         img.src = reader.result;
     };
-
     reader.readAsDataURL(file);
 };
 
 // DRAW CANVAS
 function drawMeme() {
-    ctx.clearRect(0,0,canvas.width, canvas.height);
+    if (!img.src) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw scaled image
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
     drawTextOnCanvas(topText);
@@ -218,35 +341,43 @@ function drawMeme() {
 
 function drawTextOnCanvas(el) {
     const style = window.getComputedStyle(el);
-
-    const fontSize = parseInt(style.fontSize);
+    const fontSize = parseInt(style.fontSize) * scale;
     const fontFamily = fontSelect.value;
     const color = textColor.value;
     const stroke = outlineColor.value;
 
-    ctx.font = `${fontSize}px ${fontFamily}`;
+    ctx.font = `bold ${fontSize}px ${fontFamily}`;
     ctx.fillStyle = color;
     ctx.strokeStyle = stroke;
-    ctx.lineWidth = fontSize / 12;
+    ctx.lineWidth = fontSize / 10;
     ctx.textAlign = "center";
+    ctx.lineJoin = 'round';
 
-    const x = el.offsetLeft + el.offsetWidth / 2;
-    const y = el.offsetTop + fontSize;
+    // Get position relative to canvas
+    const rect = canvas.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const x = (elRect.left - rect.left) + elRect.width / 2;
+    const y = (elRect.top - rect.top) + fontSize * 0.8;
 
+    // Draw outline then fill
     ctx.strokeText(el.textContent, x, y);
     ctx.fillText(el.textContent, x, y);
 }
 
+// DOWNLOAD
 document.getElementById("downloadBtn").onclick = () => {
-    if (!img.src) return alert("Upload an image first");
+    if (!img.src) return alert("Upload an image first!");
 
     drawMeme();
 
     const link = document.createElement("a");
     link.download = "solmeme.png";
-    link.href = canvas.toDataURL();
+    link.href = canvas.toDataURL("image/png");
     link.click();
 };
+
+// Initial draw
+drawMeme();
 </script>
 </body>
 </html>
