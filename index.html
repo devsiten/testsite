@@ -203,6 +203,14 @@
     .ai-section button {
         margin-top: 10px;
     }
+
+    #loading {
+        display: none;
+        text-align: center;
+        margin-top: 10px;
+        color: #76a7ff;
+        font-style: italic;
+    }
 </style>
 </head>
 
@@ -212,10 +220,14 @@
     <h1>SOLMEME MAKER</h1>
 
     <div class="ai-section">
+        <label>xAI API Key</label>
+        <input type="text" id="apiKey" placeholder="Enter your xAI API Key (get at https://x.ai/api)">
+
         <label>AI Image Prompt</label>
         <input type="text" id="aiPrompt" placeholder="Describe the image, e.g., 'A funny cat on Solana blockchain'">
 
         <button id="generateAI">Generate AI Image</button>
+        <div id="loading">Generating image... Please wait.</div>
     </div>
 
     <label>Upload Image (or use generated AI image)</label>
@@ -226,198 +238,4 @@
         <option value="Impact">Impact</option>
         <option value="Arial Black">Arial Black</option>
         <option value="Comic Sans MS">Comic Sans MS</option>
-        <option value="Courier New">Courier New</option>
-    </select>
-
-    <label>Text Color</label>
-    <input type="color" id="textColor" value="#ffffff">
-
-    <label>Outline Color</label>
-    <input type="color" id="outlineColor" value="#000000">
-
-    <label>Top Text</label>
-    <input type="text" id="topInput" placeholder="Enter top text" autocomplete="off">
-
-    <label>Bottom Text</label>
-    <input type="text" id="bottomInput" placeholder="Enter bottom text" autocomplete="off">
-
-    <div id="board">
-        <canvas id="canvas"></canvas>
-
-        <div id="topText" class="text-layer" style="top: 20px; left: 50%; transform: translateX(-50%);">
-            TOP TEXT
-        </div>
-
-        <div id="bottomText" class="text-layer" style="bottom: 20px; left: 50%; transform: translateX(-50%);">
-            BOTTOM TEXT
-        </div>
-    </div>
-
-    <button id="downloadBtn">DOWNLOAD SOLMEME</button>
-
-</div>
-
-<script>
-const upload = document.getElementById("upload");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-
-const topText = document.getElementById("topText");
-const bottomText = document.getElementById("bottomText");
-const fontSelect = document.getElementById("fontSelect");
-const textColor = document.getElementById("textColor");
-const outlineColor = document.getElementById("outlineColor");
-const topInput = document.getElementById("topInput");
-const bottomInput = document.getElementById("bottomInput");
-const aiPrompt = document.getElementById("aiPrompt");
-const generateAI = document.getElementById("generateAI");
-
-let img = new Image();
-let scale = 1;
-
-// DRAGGABLE TEXT
-function makeDraggable(el) {
-    let dragging = false, offsetX = 0, offsetY = 0;
-
-    el.addEventListener("mousedown", e => {
-        dragging = true;
-        const rect = canvas.getBoundingClientRect();
-        offsetX = e.clientX - rect.left - parseFloat(el.style.left || 0);
-        offsetY = e.clientY - rect.top - parseFloat(el.style.top || 0);
-        el.style.transition = 'none';
-    });
-
-    window.addEventListener("mouseup", () => {
-        dragging = false;
-        setTimeout(() => el.style.transition = 'transform 0.1s ease', 100);
-    });
-
-    window.addEventListener("mousemove", e => {
-        if (!dragging) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left - offsetX;
-        const y = e.clientY - rect.top - offsetY;
-
-        el.style.left = x + "px";
-        el.style.top = y + "px";
-        el.style.transform = 'none';
-    });
-}
-
-makeDraggable(topText);
-makeDraggable(bottomText);
-
-// TEXT INPUT WITH SHAKE ANIMATION
-function addShakeEffect(input, textEl) {
-    input.oninput = e => {
-        const value = e.target.value.toUpperCase();
-        textEl.textContent = value || (textEl === topText ? "TOP TEXT" : "BOTTOM TEXT");
-        textEl.classList.add('shake');
-        setTimeout(() => textEl.classList.remove('shake'), 500);
-        drawMeme();
-    };
-}
-
-addShakeEffect(topInput, topText);
-addShakeEffect(bottomInput, bottomText);
-
-// STYLE CHANGES
-fontSelect.onchange = textColor.onchange = outlineColor.onchange = drawMeme;
-
-// AI IMAGE GENERATION PLACEHOLDER
-generateAI.onclick = () => {
-    const prompt = aiPrompt.value.trim();
-    if (!prompt) {
-        alert("Please enter a description for the AI image!");
-        return;
-    }
-    alert(`AI image generation coming soon! For now, copy this prompt and ask Grok (on x.com or grok.com) to generate it: "${prompt}". Then download the image and upload it here. Visit https://x.ai/api for xAI API integration options.`);
-};
-
-// LOAD IMAGE WITH PROPER SCALING
-upload.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-        img = new Image();
-        img.onload = () => {
-            const MAX_WIDTH = 900;
-            const MAX_HEIGHT = 550;
-
-            // Calculate scale to fit within bounds
-            scale = Math.min(MAX_WIDTH / img.width, MAX_HEIGHT / img.height, 1);
-            canvas.width = img.width * scale;
-            canvas.height = img.height * scale;
-
-            // Reset text positions
-            topText.style.top = '20px';
-            topText.style.left = '50%';
-            topText.style.transform = 'translateX(-50%)';
-            bottomText.style.bottom = '20px';
-            bottomText.style.left = '50%';
-            bottomText.style.transform = 'translateX(-50%)';
-
-            drawMeme();
-        };
-        img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-};
-
-// DRAW CANVAS
-function drawMeme() {
-    if (!img.src) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw scaled image
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-    drawTextOnCanvas(topText);
-    drawTextOnCanvas(bottomText);
-}
-
-function drawTextOnCanvas(el) {
-    const style = window.getComputedStyle(el);
-    const fontSize = parseInt(style.fontSize) * scale;
-    const fontFamily = fontSelect.value;
-    const color = textColor.value;
-    const stroke = outlineColor.value;
-
-    ctx.font = `bold ${fontSize}px ${fontFamily}`;
-    ctx.fillStyle = color;
-    ctx.strokeStyle = stroke;
-    ctx.lineWidth = fontSize / 10;
-    ctx.textAlign = "center";
-    ctx.lineJoin = 'round';
-
-    // Get position relative to canvas
-    const rect = canvas.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    const x = (elRect.left - rect.left) + elRect.width / 2;
-    const y = (elRect.top - rect.top) + fontSize * 0.8;
-
-    // Draw outline then fill
-    ctx.strokeText(el.textContent, x, y);
-    ctx.fillText(el.textContent, x, y);
-}
-
-// DOWNLOAD
-document.getElementById("downloadBtn").onclick = () => {
-    if (!img.src) return alert("Upload an image first!");
-
-    drawMeme();
-
-    const link = document.createElement("a");
-    link.download = "solmeme.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-};
-
-// Initial draw
-drawMeme();
-</script>
-</body>
-</html>
+        <option value="Courier
