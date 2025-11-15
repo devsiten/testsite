@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SolCalc - Simple Calculator with SOL Tools</title>
+    <title>SolCalc - Scientific Calculator with SOL Tools</title>
     <style>
         body {
             display: flex;
@@ -12,36 +12,36 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            background: linear-gradient(135deg, #0f1a3b, #1a2a6c);
+            background: linear-gradient(135deg, #f0f4f8, #e0f7fa); /* Cool white/light blue gradient */
             font-family: 'Arial', sans-serif;
-            color: #fff;
+            color: #333; /* Dark text for light background */
         }
 
         .calculator {
-            background: rgba(22, 36, 79, 0.9);
+            background: #ffffff; /* White calculator background */
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            width: 300px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            width: 320px; /* Slightly wider for more buttons */
             backdrop-filter: blur(5px);
         }
 
         .display {
-            background: #091024;
+            background: #f0f4f8;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             text-align: right;
             font-size: 2em;
-            color: #76a7ff;
-            border: 2px solid #314270;
+            color: #1a2a6c;
+            border: 2px solid #76a7ff;
             overflow: hidden;
             white-space: nowrap;
         }
 
         .buttons {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr); /* 5 columns for scientific buttons */
             gap: 10px;
         }
 
@@ -70,6 +70,10 @@
             background: linear-gradient(135deg, #ff6b1f, #ff00c3);
         }
 
+        button.sci {
+            background: linear-gradient(135deg, #2196f3, #673ab7);
+        }
+
         button.equals {
             background: linear-gradient(135deg, #4caf50, #8bc34a);
             grid-column: span 2;
@@ -82,33 +86,33 @@
 
         h1 {
             text-align: center;
-            color: #76a7ff;
+            color: #1a2a6c;
             margin-bottom: 20px;
             font-size: 1.5em;
-            text-shadow: 0 0 10px rgba(118, 167, 255, 0.5);
+            text-shadow: 0 0 10px rgba(118, 167, 255, 0.3);
         }
 
         .tool-section {
             margin-top: 30px;
             padding: 15px;
-            background: rgba(13, 23, 52, 0.8);
+            background: #f0f4f8;
             border-radius: 10px;
-            border: 1px solid #314270;
+            border: 1px solid #76a7ff;
         }
 
         .tool-section label {
             display: block;
             margin-bottom: 10px;
             font-size: 1em;
-            color: #bdd0ff;
+            color: #1a2a6c;
         }
 
         .tool-section input {
             width: 100%;
             padding: 10px;
-            background: #0d1734;
-            border: 1px solid #314270;
-            color: #fff;
+            background: #ffffff;
+            border: 1px solid #76a7ff;
+            color: #333;
             border-radius: 5px;
             font-size: 1em;
             margin-bottom: 10px;
@@ -128,7 +132,7 @@
 
         .tool-section .loading {
             text-align: center;
-            color: #76a7ff;
+            color: #1f6feb;
             font-style: italic;
             display: none;
         }
@@ -140,25 +144,40 @@
 </head>
 <body>
     <div class="calculator">
-        <h1>SOLCALC</h1>
+        <h1>SOLCALC SCIENTIFIC</h1>
         <div class="display" id="display">0</div>
         <div class="buttons">
             <button class="clear" onclick="clearDisplay()">C</button>
-            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            <button class="sci" onclick="appendToDisplay('Math.sqrt(')">√</button>
+            <button class="sci" onclick="appendToDisplay('Math.pow(')">x^y</button>
+            <button class="sci" onclick="appendToDisplay('Math.log(')">log</button>
+            <button class="sci" onclick="appendToDisplay('Math.PI')">π</button>
+
             <button onclick="appendToDisplay('7')">7</button>
             <button onclick="appendToDisplay('8')">8</button>
             <button onclick="appendToDisplay('9')">9</button>
-            <button class="operator" onclick="appendToDisplay('*')">*</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            <button class="sci" onclick="appendToDisplay('Math.sin(')">sin</button>
+
             <button onclick="appendToDisplay('4')">4</button>
             <button onclick="appendToDisplay('5')">5</button>
             <button onclick="appendToDisplay('6')">6</button>
-            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            <button class="operator" onclick="appendToDisplay('*')">*</button>
+            <button class="sci" onclick="appendToDisplay('Math.cos(')">cos</button>
+
             <button onclick="appendToDisplay('1')">1</button>
             <button onclick="appendToDisplay('2')">2</button>
             <button onclick="appendToDisplay('3')">3</button>
-            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            <button class="sci" onclick="appendToDisplay('Math.tan(')">tan</button>
+
             <button onclick="appendToDisplay('0')">0</button>
             <button onclick="appendToDisplay('.')">.</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            <button class="sci" onclick="appendToDisplay('Math.exp(')">exp</button>
+            <button onclick="appendToDisplay('(')">(</button>
+
+            <button onclick="appendToDisplay(')')">)</button>
             <button class="equals" onclick="calculate()">=</button>
         </div>
 
@@ -194,7 +213,7 @@
         let currentInput = '0';
 
         function appendToDisplay(value) {
-            if (currentInput === '0' && value !== '.') {
+            if (currentInput === '0' && value !== '.' && !value.endsWith('(')) {
                 currentInput = value;
             } else {
                 currentInput += value;
@@ -209,7 +228,18 @@
 
         function calculate() {
             try {
-                currentInput = eval(currentInput).toString();
+                // Replace Math functions for eval
+                let evalInput = currentInput
+                    .replace(/Math.sqrt/g, 'Math.sqrt')
+                    .replace(/Math.pow/g, 'Math.pow')
+                    .replace(/Math.log/g, 'Math.log')
+                    .replace(/Math.sin/g, 'Math.sin')
+                    .replace(/Math.cos/g, 'Math.cos')
+                    .replace(/Math.tan/g, 'Math.tan')
+                    .replace(/Math.exp/g, 'Math.exp')
+                    .replace(/Math.PI/g, 'Math.PI');
+
+                currentInput = eval(evalInput).toString();
                 display.textContent = currentInput;
             } catch (error) {
                 display.textContent = 'Error';
@@ -227,9 +257,11 @@
             return data.solana.usd;
         }
 
+        const RPC_URL = 'https://solana-mainnet.publicnode.com'; // More reliable public RPC
+
         // Shared RPC Fetch Function
         async function solanaRpc(method, params) {
-            const response = await fetch('https://api.mainnet-beta.solana.com', {
+            const response = await fetch(RPC_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -304,7 +336,7 @@
 
                 balanceResult.textContent = `Balance: ${solBalance} SOL ≈ $${usdBalance} USD (Price: $${price.toFixed(2)})`;
             } catch (error) {
-                balanceResult.textContent = `Error: ${error.message}. Check the address and try again.`;
+                balanceResult.textContent = `Error: ${error.message}. Check the address and try again. If persistent, the public RPC may be rate-limited—consider a personal RPC key.`;
                 balanceResult.classList.add('error');
             } finally {
                 balanceLoading.style.display = 'none';
@@ -365,7 +397,7 @@
 
                 tokenResult.textContent = `Balance: ${tokenBalance} Tokens ≈ $${usdBalance} USD (Price: $${price.toFixed(4)})`;
             } catch (error) {
-                tokenResult.textContent = `Error: ${error.message}. Check inputs and try again.`;
+                tokenResult.textContent = `Error: ${error.message}. Check inputs and try again. If persistent, the public RPC may be rate-limited—consider a personal RPC key.`;
                 tokenResult.classList.add('error');
             } finally {
                 tokenLoading.style.display = 'none';
